@@ -100,12 +100,13 @@ int main() {
             fdout = open(fout, O_WRONLY);
        }       
     } 
+   }
+}  
     
+void exec(char* bufadd, char* command, int fdin, int fdout){
     bufadd = trim(bufadd);
     int saved_stdout;
     int saved_stdin;
-    for (i; command[i] = strsep(&bufadd, " "); i++);
-    command[i] = 0;
     if (!(strcmp(command[0],"exit"))){
       exit(0);
     }
