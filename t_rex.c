@@ -26,11 +26,10 @@ void prompt(){
 }
 
 int cd(char *pth){
-    int BUFFERSIZE=256;
-    char path[BUFFERSIZE];
+    char path[256];
     strcpy(path,pth);
 
-    char cwd[BUFFERSIZE];
+    char cwd[256];
     if(pth[0] != '/')
     {// true for the dir in cwd
         getcwd(cwd,sizeof(cwd));
@@ -44,7 +43,7 @@ int cd(char *pth){
 }
 
 void trim(char **str){
-printf("in trim %s\n", *str);
+//printf("in trim %s\n", *str);
   char *end;
 
   // Trim leading space
@@ -70,10 +69,35 @@ void readin(char * buf){
 	*(strchr(buf, '\n')) = '\0';
 }
 
-/*peterPIPEr
-*/
-void peterpiper(){
 
+void peterpiper(char * buf){
+  //buf is already parsed. wake up amy.
+  char * p = (char *)malloc(256);
+  int stat = 0;
+  int fd[2];
+  int filedes = dup(STDIN_FILENO);
+
+  p = strsep(&buf, "|"); //separate the statements
+
+  pipe(fd);
+  int pid = fork(); //giving birth
+
+  //it's a child!
+  if (!pid){
+    close(fd[0]); //close the read part we dont need it
+    dup2(fd[1],STDOUT_FILENO); //swap stdout with write 
+    parse(p); //send it to parse to exec
+    exit(0); //bye bye child
+  }
+
+  //parenting sucks
+  else{
+    wait(&stat);
+    close(fd[1]); //dont need write if its parent. u want READ
+    dup2(fd[0], STDIN_FILENO); //replaces stdin with pipe read
+    parse(buf); //execute
+    dup2(filedes, STDIN_FILENO); //same thing but will return STDIN
+  }
 }
 
 /*
@@ -95,19 +119,22 @@ void parse(char * buf){
          cmd[i] = 0;
 
          char * redir = (char *)malloc(256);
-    
-         if (strchr(cmd, '<') || strchr(cmd, '>') )  
-            redirect(buf);
-         else if(strchr(cmd, '|'))
-            peterpiper(buf);
-         else
-            exec(cmd, -1, -1);
+         exec(cmd, -1, -1);
        }
   }
+  
+
+  if (strchr(buf, '<') || strchr(buf, '>') )  
+     redirect(buf);
+
+  if(strchr(buf, '|'))
+     peterpiper(buf);
+
   else {
+      
       //just one command
       for (i=0; cmd[i] = strsep(&buf, " "); i++);
-      printf("cmd - %s\n", cmd[0]); 
+      //printf("cmd - %s\n", cmd[0]); 
       cmd[i] = 0;
       exec(cmd, -1, -1);
   
@@ -205,7 +232,7 @@ void exec(char** cmd, int fdin, int fdout){
 
     if (!(strcmp(cmd[0],"exit")))
       exit(0);
-    printf("cmd %s- %s\n", cmd[0], cmd);
+    //printf("cmd %s- %s\n", cmd[0], cmd);
 
     if (!(strcmp(cmd[0],"cd"))){
       char* location = strchr(cmd[1], '\n');
@@ -231,7 +258,7 @@ void exec(char** cmd, int fdin, int fdout){
       else {
          do { 
            tpid = wait(&stat);
-           printf("id %d\n", tpid);
+           //printf("id %d\n", tpid);
          } while(tpid != -1);
       } 
       if(fdin != -1){
@@ -244,3 +271,16 @@ void exec(char** cmd, int fdin, int fdout){
       }
   }
 }
+
+
+// int main(){
+//   while(1){
+//     int fdin, fdout;
+//     fdin = fdout = -1;
+//     char buf[256];
+//     prompt();
+//     readin(buf);        
+//     parse(buf);
+//   }
+//   return 0;
+// }
