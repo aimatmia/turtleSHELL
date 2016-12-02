@@ -42,6 +42,21 @@ int cd(char *pth){
     return 0;
 }
 
+char* deblank(char* input)                                         
+{
+    int i,j;
+    char *output=input;
+    for (i = 0, j = 0; i<strlen(input); i++,j++)          
+    {
+        if (input[i]!=' ')                           
+            output[j]=input[i];                     
+        else
+            j--;                                     
+    }
+    output[j]=0;
+    return output;
+}
+
 void trim(char **str){
 //printf("in trim %s\n", *str);
   char *end;
@@ -73,7 +88,7 @@ void decisonmaker(char * buf){
   char * cmd[20];
   char * semi = NULL;
   int i = 0;
-  trim(&buf);
+  deblank(buf);
 
 
   if (!(strcmp(buf,"exit")))
@@ -83,7 +98,7 @@ void decisonmaker(char * buf){
       char* semi = (char *)malloc(256);
       while ( semi = strsep(&buf, ";") ) {
       
-         trim(&semi);
+         deblank(semi);
          for (i=0; cmd[i] = strsep(&semi, " "); i++);
          cmd[i] = 0;
 
@@ -123,8 +138,8 @@ void peterpiper(char * buf){
   int stdin = dup(STDIN_FILENO);
 
   p = strsep(&buf, "|"); //separate the statements
-  trim(&p);
-  trim(&buf);
+  deblank(p);
+  deblank(buf);
   printf("p: %s\n", p);
   printf("buf: %s\n", buf);
 
@@ -171,13 +186,13 @@ void peterpiper(char * buf){
         if (first && sin != NULL && sout==NULL){
         // only input
             bufadd = strsep(&rest , "<");
-            fin = trim(&rest);
+            fin = deblank(rest);
 printf("1\n");
         }
         if (first && sin == NULL && sout!=NULL){
         // only output
             bufadd = strsep(&rest , ">");
-            fout = trim(&rest);
+            fout = deblank(rest);
 printf("2\n");   
         }
         if (sin != NULL && sout!=NULL) {
@@ -191,24 +206,24 @@ printf("2\n");
             buf2 = strsep(&r2 , ">");
             if ( strlen(r1) > strlen(r2) ) {
                bufadd = buf1;
-               rest = trim(&r1);
+               rest = deblank(r1);
             }
             else {
                bufadd = buf2;
-               rest = trim(&r2); 
+               rest = deblank(r2); 
             }
             printf("buf=%s, rest=%s\n", bufadd, rest);
         }         
         if (!first && sin != NULL && sout==NULL){
         // > < 
-            fout = trim(strsep(&rest , "<"));
-            fin = trim(&rest);
+            fout = deblank(strsep(&rest , "<"));
+            fin = deblank(rest);
 printf("4\n");   
         }
         // < >
         if ( !first && sin == NULL && sout!=NULL){
             fin = strsep(&rest , ">");
-            fout = trim(&rest);  
+            fout = deblank(rest);  
 printf("5\n");             
         }
         first = 0;
@@ -223,7 +238,7 @@ printf("5\n");
        close(fdout);
        fdout = open(fout, O_WRONLY);
   }       
-  trim(&bufadd);
+  deblank(bufadd);
   exec(bufadd, fdin, fdout);
     
   }
