@@ -69,42 +69,7 @@ void readin(char * buf){
 	*(strchr(buf, '\n')) = '\0';
 }
 
-
-void peterpiper(char * buf){
-  //buf is already parsed. wake up amy.
-  char * p = (char *)malloc(256);
-  int stat = 0;
-  int fd[2];
-  int filedes = dup(STDIN_FILENO);
-
-  p = strsep(&buf, "|"); //separate the statements
-
-  pipe(fd);
-  int pid = fork(); //giving birth
-
-  //it's a child!
-  if (!pid){
-    close(fd[0]); //close the read part we dont need it
-    dup2(fd[1],STDOUT_FILENO); //swap stdout with write 
-    parse(p); //send it to parse to exec
-    exit(0); //bye bye child
-  }
-
-  //parenting sucks
-  else{
-    wait(&stat);
-    close(fd[1]); //dont need write if its parent. u want READ
-    dup2(fd[0], STDIN_FILENO); //replaces stdin with pipe read
-    parse(buf); //execute
-    dup2(filedes, STDIN_FILENO); //same thing but will return STDIN
-  }
-}
-
-/*
-Parse trims the buf, getting rid of any unneccessary space between and after and then modifies
-the given char ** cmd, filling it with the input from buf
-*/
-void parse(char * buf){
+void decisonmaker(char * buf){
   char * cmd[20];
   char * semi = NULL;
   int i = 0;
@@ -123,7 +88,6 @@ void parse(char * buf){
        }
   }
   
-
   if (strchr(buf, '<') || strchr(buf, '>') )  
      redirect(buf);
 
@@ -144,7 +108,50 @@ void parse(char * buf){
 }
 
 
-int redirect(char *buf) {
+void peterpiper(char * buf){
+  //buf is already decisonmakerd. wake up amy.
+  char * p = (char *)malloc(256);
+  int stat = 0;
+  int fd[2];
+  int stdin = dup(STDIN_FILENO);
+
+  p = strsep(&buf, "|"); //separate the statements
+
+  pipe(fd);
+  int pid = fork(); //giving birth
+
+  //it's a child!
+  if (!pid){
+    close(fd[0]); //close the read part we dont need it
+    dup2(fd[1],STDOUT_FILENO); //swap stdout with write 
+    decisonmaker(p); //send it to decisonmaker to exec
+    exit(0); //bye bye child
+  }
+
+  //parenting sucks
+  else{
+    wait(&stat);
+    close(fd[1]); //dont need write if its parent. u want READ
+    dup2(fd[0], STDIN_FILENO); //replaces stdin with pipe read
+    decisonmaker(buf); //execute
+    dup2(stdin, STDIN_FILENO); //same thing but will return STDIN
+  }
+}
+
+
+int redirectR(char *buf) {
+  char * p = (char *)malloc(256);
+  int stat = 0;
+  int filedes = open(buf, O_WRONLY | O_CREAT, 0644 | O_TRUNC);
+  int stdout = dup(STDOUT_FILENO);
+  dup2(filedes, STDIN_FILENO);
+  decisonmaker(buf);
+  dup2(stdout, STDOUT_FILENO); 
+  close(filedes);
+  free(p);
+}
+
+
 /*    int i=0;
     int first=1;
     char *rest = buf;
@@ -280,7 +287,7 @@ void exec(char** cmd, int fdin, int fdout){
 //     char buf[256];
 //     prompt();
 //     readin(buf);        
-//     parse(buf);
+//     decisonmaker(buf);
 //   }
 //   return 0;
 // }
