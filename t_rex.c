@@ -70,6 +70,12 @@ void readin(char * buf){
 	*(strchr(buf, '\n')) = '\0';
 }
 
+/*peterPIPEr
+*/
+void peterpiper(){
+
+}
+
 /*
 Parse trims the buf, getting rid of any unneccessary space between and after and then modifies
 the given char ** cmd, filling it with the input from buf
@@ -77,15 +83,13 @@ the given char ** cmd, filling it with the input from buf
 void parse(char * buf){
   char * cmd[20];
   char * semi = NULL;
-  printf("WHERE DID YOU BREAK5 %s\n", buf);
   int i = 0;
   trim(&buf);
-  printf("WHERE DID YOU BREAK6 %s\n", buf);
   //if multiple commands
   if (strchr(buf, ';')) {
       char* semi = (char *)malloc(256);
       while ( semi = strsep(&buf, ";") ) {
-         printf("WHERE DID YOU BREAK\n");
+      
          trim(&semi);
          for (i=0; cmd[i] = strsep(&semi, " "); i++);
          cmd[i] = 0;
@@ -94,6 +98,8 @@ void parse(char * buf){
     
          if (strchr(cmd, '<') || strchr(cmd, '>') )  
             redirect(buf);
+         else if(strchr(cmd, '|'))
+            peterpiper(buf);
          else
             exec(cmd, -1, -1);
        }
@@ -104,7 +110,7 @@ void parse(char * buf){
       printf("cmd - %s\n", cmd[0]); 
       cmd[i] = 0;
       exec(cmd, -1, -1);
-      printf("WHERE DID YOU BREAK2\n");
+  
       if (semi !=NULL)
           free(semi);
   }
