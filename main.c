@@ -7,7 +7,6 @@
 #include <limits.h>
 
 #include "t_rex.h"
-#include "shell.h"
 
 int main(){
 	while(1){
