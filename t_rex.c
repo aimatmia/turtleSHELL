@@ -74,7 +74,11 @@ void decisonmaker(char * buf){
   char * semi = NULL;
   int i = 0;
   trim(&buf);
-  //if multiple commands
+
+
+  if (!(strcmp(buf,"exit")))
+    exit(0);
+
   if (strchr(buf, ';')) {
       char* semi = (char *)malloc(256);
       while ( semi = strsep(&buf, ";") ) {
@@ -88,7 +92,7 @@ void decisonmaker(char * buf){
        }
   }
   
-  if (strchr(buf, '<') || strchr(buf, '>') )  
+  if (strchr(buf, '>') || strchr(buf, '<'))  
      redirect(buf);
 
   if(strchr(buf, '|'))
@@ -107,6 +111,9 @@ void decisonmaker(char * buf){
   }
 }
 
+void redirect(char * buf){
+
+}
 
 void peterpiper(char * buf){
   //buf is already decisonmakerd. wake up amy.
@@ -116,13 +123,17 @@ void peterpiper(char * buf){
   int stdin = dup(STDIN_FILENO);
 
   p = strsep(&buf, "|"); //separate the statements
+  trim(&p);
+  trim(&buf);
+  printf("p: %s\n", p);
+  printf("buf: %s\n", buf);
 
   pipe(fd);
   int pid = fork(); //giving birth
 
   //it's a child!
   if (!pid){
-    close(fd[0]); //close the read part we dont need it
+    close(fd[0]); //close the read part bc we want the child to write its output so that we can use it
     dup2(fd[1],STDOUT_FILENO); //swap stdout with write 
     decisonmaker(p); //send it to decisonmaker to exec
     exit(0); //bye bye child
@@ -136,19 +147,6 @@ void peterpiper(char * buf){
     decisonmaker(buf); //execute
     dup2(stdin, STDIN_FILENO); //same thing but will return STDIN
   }
-}
-
-
-int redirectR(char *buf) {
-  char * p = (char *)malloc(256);
-  int stat = 0;
-  int filedes = open(buf, O_WRONLY | O_CREAT, 0644 | O_TRUNC);
-  int stdout = dup(STDOUT_FILENO);
-  dup2(filedes, STDIN_FILENO);
-  decisonmaker(buf);
-  dup2(stdout, STDOUT_FILENO); 
-  close(filedes);
-  free(p);
 }
 
 
@@ -229,16 +227,13 @@ printf("5\n");
   exec(bufadd, fdin, fdout);
     
   }
-*/}
+*/
 
 
 void exec(char** cmd, int fdin, int fdout){
     int saved_stdout = 1;
     int saved_stdin = 0;
     char directories[30];
-
-    if (!(strcmp(cmd[0],"exit")))
-      exit(0);
     //printf("cmd %s- %s\n", cmd[0], cmd);
 
     if (!(strcmp(cmd[0],"cd"))){
