@@ -14,14 +14,17 @@
 
 ### trex.c
 
-`>/******************************************************* PROMPT: gets current directory and user. prints out the appropriate command line prompt depending on whether the hostname is null or not.  
+`/******************************************************* 
+PROMPT: gets current directory and user. prints out the appropriate command line prompt depending on whether the hostname is null or not.  
 Takes as input: none  
-Returns: none *******************************************************/  
+Returns: none 
+*******************************************************/  
 
 /*******************************************************  
 CD: takes in a path string, modifies the string if needed and changes the directory to the path string.  
 Takes as input: input string (path)  
-Returns: int (returns 0 upon completion) *******************************************************/  
+Returns: int (returns 0 upon completion) 
+*******************************************************/  
 
 /*******************************************************  
 DEBLANK: removes extra white space from around a given string  
