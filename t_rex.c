@@ -65,25 +65,12 @@ char* deblank(char* input)
     output[j]=0;
     return output;
 }
-
+/*********************************************************************
+TRIM: trims white spaces
+Takes as input: pointer to pointer to string
+Returns: string
+*********************************************************************/
 char * trim(char **str){
-// //printf("in trim %s\n", *str);
-//   char *end;
-
-//   // Trim leading space
-//   while(isspace(*str)) str++;
-
-//   if(*str == 0)  // All spaces?
-//     return "";
-
-//   // Trim trailing space
-//   end = *str + strlen(*str) - 1;
-//   while(end > *str && isspace((unsigned char)*end)) end--;
-
-//   // Write new null terminator
-//   *(end+1) = 0;
-
-//   return str;
   char *end;
 
   // Trim leading space
@@ -123,27 +110,18 @@ void decisonmaker(char * buf){
   char * cmd[20];
   char* semi = (char *)malloc(256);
   int i = 0;
-  // buf = trim(buf);
-  //buf = deblank(buf);
   if (!(strcmp(buf,"exit")))
     exit(0);
 
   else if (strchr(buf, ';')) {
     printf("hello its me\n");
         while (semi = strsep(&buf, ";") ) {
-           //deblank(semi);
-           //printf("semi: %s\n", semi);
-           //printf("buf: %s\n", buf);
-           // for (i=0; cmd[i] = strsep(&semi, " "); i++);
-           // cmd[i] = 0;
-           // exec(cmd, -1, -1);
            semi= trim(semi);
            exec_1com(semi, NULL, NULL);
          }
   }
 
   else if (strchr(buf, '<')){
-    //printf("hiiii\n");
     redirectL(buf);
   }
 
@@ -184,7 +162,6 @@ void redirectR(char * buf){
   trim(&buf);
   int op = open(buf, O_WRONLY | O_TRUNC | O_CREAT, 0644);
   dup2(op, STDOUT_FILENO);
-  //printf("buffy: %s\n", buf);
   decisonmaker(p);
   dup2(stdout, STDOUT_FILENO);
   close(op);
@@ -200,7 +177,6 @@ void redirectRA(char * buf){
   trim(&buf);
   int op = open(buf, O_APPEND | O_WRONLY | O_CREAT, 0644);
   dup2(op, STDOUT_FILENO);
-  //printf("buffy: %s\n", buf);
   decisonmaker(p);
   dup2(stdout, STDOUT_FILENO);
   close(op);
@@ -234,15 +210,12 @@ Takes as input: input string
 Returns: none 
 ********************************************************************/
 void peterpiper(char * buf){
-  //buf is already decisonmakerd. wake up amy.
   char * p = (char *)malloc(256);
   int stat = 0;
   int fd[2];
   int stdin = dup(STDIN_FILENO);
 
   p = strsep(&buf, "|"); //separate the statements
-  // p = deblank(p);
-  // buf = deblank(buf);
   p = trim(p);
   buf = trim(buf);
 
@@ -333,7 +306,6 @@ void exec_1com(char* buf, char *fin, char *fout){
     for (i=0; cmd[i] = strsep(&buf, " "); i++);
     cmd[i] = 0;
 
-    //char * redir = (char *)malloc(256);
     printf("bufsave %s\n", bufsave);
     if (strchr(bufsave, '>'))  
          redirectR(bufsave);
