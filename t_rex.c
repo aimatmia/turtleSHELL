@@ -67,18 +67,34 @@ char* deblank(char* input)
 }
 
 char * trim(char **str){
-//printf("in trim %s\n", *str);
+// //printf("in trim %s\n", *str);
+//   char *end;
+
+//   // Trim leading space
+//   while(isspace(*str)) str++;
+
+//   if(*str == 0)  // All spaces?
+//     return "";
+
+//   // Trim trailing space
+//   end = *str + strlen(*str) - 1;
+//   while(end > *str && isspace((unsigned char)*end)) end--;
+
+//   // Write new null terminator
+//   *(end+1) = 0;
+
+//   return str;
   char *end;
 
   // Trim leading space
-  while(isspace(*str)) str++;
+  while(isspace((unsigned char)*str)) str++;
 
   if(*str == 0)  // All spaces?
-    return "";
+    return str;
 
   // Trim trailing space
-  end = *str + strlen(*str) - 1;
-  while(end > *str && isspace((unsigned char)*end)) end--;
+  end = str + strlen(str) - 1;
+  while(end > str && isspace((unsigned char)*end)) end--;
 
   // Write new null terminator
   *(end+1) = 0;
@@ -113,24 +129,30 @@ void decisonmaker(char * buf){
     exit(0);
 
   else if (strchr(buf, ';')) {
+    printf("hello its me\n");
         while (semi = strsep(&buf, ";") ) {
            //deblank(semi);
            //printf("semi: %s\n", semi);
            //printf("buf: %s\n", buf);
-           for (i=0; cmd[i] = strsep(&semi, " "); i++);
-           cmd[i] = 0;
-           exec(cmd, -1, -1);
+           // for (i=0; cmd[i] = strsep(&semi, " "); i++);
+           // cmd[i] = 0;
+           // exec(cmd, -1, -1);
+           semi= trim(semi);
+           exec_1com(semi, NULL, NULL);
          }
   }
+
+  else if (strchr(buf, '<')){
+    //printf("hiiii\n");
+    redirectL(buf);
+  }
+
   else if (strstr(buf, ">>")){
-    printf("hello its me\n");
     redirectRA(buf);
   }
   else if (strchr(buf, '>')){
     redirectR(buf);
   }
-  else if (strchr(buf, '<'))
-    redirectL(buf);
 
   else if(strchr(buf, '|'))
      peterpiper(buf);
@@ -168,13 +190,6 @@ void redirectR(char * buf){
   close(op);
 }
 
-/*******************************************************************
-REDIRECTRA: Splits input string on ">>", conducts the
-appropriate redirection (including opening files & appending), and 
-executes 
-Takes as input: input string  
-Returns: none 
-********************************************************************/
 void redirectRA(char * buf){
   char * p = (char *)malloc(256);
   p = strsep(&buf, ">>");
@@ -200,8 +215,8 @@ Returns: none
 void redirectL(char * buf){
   char * p = (char *)malloc(256);
   p = strsep(&buf, "<");
-  p = deblank(p);
-  buf = deblank(buf);
+  p = trim(p);
+  buf = trim(buf);
   int stdin = dup(STDIN_FILENO);
   trim(&buf);
   int op = open(buf, O_RDONLY, 0666);
@@ -226,8 +241,10 @@ void peterpiper(char * buf){
   int stdin = dup(STDIN_FILENO);
 
   p = strsep(&buf, "|"); //separate the statements
-  p = deblank(p);
-  buf = deblank(buf);
+  // p = deblank(p);
+  // buf = deblank(buf);
+  p = trim(p);
+  buf = trim(buf);
 
   pipe(fd);
   int pid = fork(); //giving birth
@@ -301,4 +318,22 @@ void exec(char** cmd, int fdin, int fdout){
           dup2(saved_stdout, 1);        
       }
   }
+}
+
+void exec_1com(char* buf, char *fin, char *fout){
+    char * cmd[20];
+    int i; 
+    char bufsave[50];
+    strcpy(bufsave, buf);
+    for (i=0; cmd[i] = strsep(&buf, " "); i++);
+    cmd[i] = 0;
+
+    //char * redir = (char *)malloc(256);
+    printf("bufsave %s\n", bufsave);
+    if (strchr(bufsave, '>'))  
+         redirectR(bufsave);
+    else if (strchr(bufsave, '<'))
+      redirectL(bufsave);
+    else
+         exec(cmd, fin, fout); 
 }
