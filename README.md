@@ -4,7 +4,8 @@
 
 *   Forks and executes commands!
 *   Parses multiple commands on one line!
-*   Redirects using >,
+*   Redirects using > and <!
+*   Pipe-able!
 
 ## Attempted:
 
