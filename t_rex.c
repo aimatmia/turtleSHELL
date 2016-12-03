@@ -8,14 +8,12 @@
 
 #include "t_rex.h"
 
-/*
-T-REX:
-Trim-Readin-Execute
-*/
-
-/*
-Trim gets rid of the trailing and front spaces
-*/
+/**********************************************************************
+PROMPT: gets current directory and user. prints out the appropriate 
+command line prompt depending on whether the hostname is null or not.  
+Takes as input: none  
+Returns: none 
+***********************************************************************/  
 void prompt(){
   char getcd[50];
   char hostname[50];
@@ -25,6 +23,12 @@ void prompt(){
     printf("%s %s$ ", getcwd(getcd, sizeof(getcd)), getenv("USER"));
 }
 
+/**********************************************************************
+CD: takes in a path string, modifies the string if needed and changes 
+the directory to the path string.  
+Takes as input: input string (path)  
+Returns: int (returns 0 upon completion) 
+***********************************************************************/
 int cd(char *pth){
     char path[256];
     strcpy(path,pth);
@@ -42,6 +46,11 @@ int cd(char *pth){
     return 0;
 }
 
+/**********************************************************************
+DEBLANK: removes extra white space from around a given string  
+Takes as input: input string  
+Returns: "trimmed" output string 
+**********************************************************************/
 char* deblank(char* input)                                         
 {
     int i,j;
@@ -77,14 +86,23 @@ char * trim(char **str){
   return str;
 }
 
-/*
-Readin modifies a char * array and fills it with the input from fgets
-*/
+/*********************************************************************
+READIN: reads (fgets) input from the terminal into the string buffer 
+Takes as input: input string buffer 
+Returns: none 
+*********************************************************************/
 void readin(char * buf){
   fgets(buf, 256, stdin); 
   *(strchr(buf, '\n')) = '\0';
 }
 
+/********************************************************************
+DECISIONMAKER: takes in string and after searching for certain 
+characters such as '<', '>', or '|' determines the appropriate action 
+to take. calls on exec.  
+Takes as input: input string  
+Returns: none 
+********************************************************************/
 void decisonmaker(char * buf){
   char * cmd[20];
   char* semi = (char *)malloc(256);
@@ -103,13 +121,14 @@ void decisonmaker(char * buf){
            cmd[i] = 0;
            exec(cmd, -1, -1);
          }
-    }
-  
+  }
+  else if (strstr(buf, ">>")){
+    printf("hello its me\n");
+    redirectRA(buf);
+  }
   else if (strchr(buf, '>')){
-     //printf("hi im here2\n");
     redirectR(buf);
   }
-
   else if (strchr(buf, '<'))
     redirectL(buf);
 
@@ -128,6 +147,12 @@ void decisonmaker(char * buf){
   }
 }
 
+/*******************************************************************
+REDIRECTR: Splits input string on ">", conducts the
+appropriate redirection (including opening files), and executes 
+Takes as input: input string  
+Returns: none 
+********************************************************************/
 void redirectR(char * buf){
   char * p = (char *)malloc(256);
   p = strsep(&buf, ">");
@@ -143,6 +168,28 @@ void redirectR(char * buf){
   close(op);
 }
 
+void redirectRA(char * buf){
+  char * p = (char *)malloc(256);
+  p = strsep(&buf, ">>");
+  p = deblank(p);
+  buf = deblank(buf);
+  buf += 1;
+  int stdout = dup(STDOUT_FILENO);
+  trim(&buf);
+  int op = open(buf, O_APPEND | O_WRONLY | O_CREAT, 0644);
+  dup2(op, STDOUT_FILENO);
+  //printf("buffy: %s\n", buf);
+  decisonmaker(p);
+  dup2(stdout, STDOUT_FILENO);
+  close(op);
+}
+
+/*******************************************************************
+REDIRECTL: Splits input string on "<", conducts the
+appropriate redirection (including opening files), and executes
+Takes as input: input string  
+Returns: none 
+********************************************************************/
 void redirectL(char * buf){
   char * p = (char *)malloc(256);
   p = strsep(&buf, "<");
@@ -158,6 +205,12 @@ void redirectL(char * buf){
 }
 
 
+/*******************************************************************
+PETERPIPER: separates the string by '|', adjusts redirection, and 
+executes after forking  
+Takes as input: input string  
+Returns: none 
+********************************************************************/
 void peterpiper(char * buf){
   //buf is already decisonmakerd. wake up amy.
   char * p = (char *)malloc(256);
@@ -190,6 +243,13 @@ void peterpiper(char * buf){
   }
 }
 
+/*******************************************************************
+EXEC: deals with cd, exit, and calls on execvp to execute
+commands
+Takes as input: takes in pointer to array of pointers, two ints 
+(input and output file descriptors)  
+Returns: none 
+********************************************************************/
 void exec(char** cmd, int fdin, int fdout){
     int saved_stdout = 1;
     int saved_stdin = 0;
