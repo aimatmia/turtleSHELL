@@ -12,6 +12,7 @@
 
 ##Files and What they Do:
 ###trex.c:
+'
 /*******************************************************
 PROMPT: gets current directory and user. prints out the 
 appropriate command line prompt depending on whether the 
@@ -62,6 +63,7 @@ Takes as input: takes in pointer to array of pointers, two
 ints (input and output file descriptors)
 Returns: none
 *******************************************************/
+'
 
 ###main.c:
 /*******************************************************
