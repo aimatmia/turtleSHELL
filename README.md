@@ -17,8 +17,6 @@
 ## Files and What they Do:
 
 ### trex.c
-Yada
-
 ```
 /**********************************************************************
 PROMPT: gets current directory and user. prints out the appropriate 
@@ -84,7 +82,6 @@ Returns: none
 ********************************************************************/
 ```
 ### main.c:
-
 ```
 /*******************************************************************
 MAIN: runs the program. gets the shell party started.
