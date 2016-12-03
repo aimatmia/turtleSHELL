@@ -15,7 +15,7 @@
 ### trex.c
 Yada
 
-`/******************************************************* 
+```/******************************************************* 
 PROMPT: gets current directory and user. prints out the appropriate command line prompt depending on whether the hostname is null or not.  
 Takes as input: none  
 Returns: none 
@@ -47,7 +47,7 @@ Returns: none *******************************************************/
 /*******************************************************  
 EXEC: TBD by Mia  
 Takes as input: takes in pointer to array of pointers, two ints (input and output file descriptors)  
-Returns: none *******************************************************/`  
+Returns: none *******************************************************/```  
 
 ### main.c:
 
