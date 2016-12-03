@@ -39,7 +39,7 @@ Returns: int (returns 0 upon completion)
 ***********************************************************************/
 
 /**********************************************************************
-DEBLANK: removes extra white space from around a given string  
+DEBLANK: white space trimming helpful in redirection fxns
 Takes as input: input string  
 Returns: "trimmed" output string 
 **********************************************************************/
