@@ -3,22 +3,19 @@
 ## Features:
 *   Forks and executes commands!
 *   Parses multiple commands on one line!
-*   Redirects using >,<,>>!
+*   Redirects using single(>, <) or multiple(< >, > <) !
 *   Pipe-able!
 
 ## Attempted:
-* trying to get autofill (tabbing to fill in words)
-* attempted to do all of the redirections (but did not get to all of them :( )
+* tried to get autofill (tabbing to fill in words)
+* didn't have time to implement >> and << redirections 
 
 ## Bugs:
-* To use multiple commands, there must be no spaces between each command and the semi-colon. For example, ls -l;echo hello;echo bye should work fine but ls -l; echo hello; echo bye will not work.
-* Sometimes you have to type "exit" multiple times to exit. Sometimes you don't.
-* To use > redirection, spaces cannot be typed
+* Only works with single spaces within one command (ls -l), not with (ls     -l)
+* But can have trailing and leading spaces for any command(     ls -l       ;       echo hello     )
 
 ##NOTES BEFORE USE:
-* it is highly recommended you do not use spaces in your commands
-* redirection with > and | works with a space in between but < does not
-* do not use spaces with multiple commands (semi colon ones)
+* Put only one space within a command
 
 ## Files and What they Do:
 
@@ -38,12 +35,6 @@ Takes as input: input string (path)
 Returns: int (returns 0 upon completion) 
 ***********************************************************************/
 
-/**********************************************************************
-DEBLANK: white space trimming helpful in redirection fxns
-Takes as input: input string  
-Returns: "trimmed" output string 
-**********************************************************************/
-
 /*********************************************************************
 READIN: reads (fgets) input from the terminal into the string buffer 
 Takes as input: input string buffer 
@@ -52,43 +43,31 @@ Returns: none
 
 /*********************************************************************
 TRIM: trims white spaces
-Takes as input: pointer to pointer to string
-Returns: string
+Takes as input: char *
+Returns: char *
 *********************************************************************/
 
 /********************************************************************
-DECISIONMAKER: takes in string and after searching for certain 
-characters such as '<', '>', or '|' determines the appropriate action 
-to take. calls on exec.  
+PARSE: takes in string and parses using ";" then sends each individual 
+parsed line to exec_1com. 
+calls on exec_1com.  
 Takes as input: input string  
 Returns: none 
 ********************************************************************/
 
 /*******************************************************************
 PETERPIPER: separates the string by '|', adjusts redirection, and 
-executes after forking  
+executes after forking
+calls on exec_1com
 Takes as input: input string  
 Returns: none 
 ********************************************************************/
 
 /*******************************************************************
-REDIRECTR: Splits input string on ">", conducts the
-appropriate redirection (including opening files), and executes 
-Takes as input: input string  
-Returns: none 
-********************************************************************/
-
-/*******************************************************************
-REDIRECTRA: Splits input string on ">>", conducts the
-appropriate redirection (including opening files & appending), and 
-executes 
-Takes as input: input string  
-Returns: none 
-********************************************************************/
-
-/*******************************************************************
-REDIRECTL: Splits input string on "<", conducts the
-appropriate redirection (including opening files), and executes
+REDIRECT: Splits input string on both ">" and "<", and decides the 
+sequence. conducts the appropriate redirection (including opening files),
+and executes 
+calls on exec_1com
 Takes as input: input string  
 Returns: none 
 ********************************************************************/
@@ -102,7 +81,9 @@ Returns: none
 ********************************************************************/
 
 /*******************************************************************
-EXEC_1COM: deals with exec cases where ";" is combined with redirection
+EXEC_1COM: deals with exec cases with redirection and pipes as well
+as just a simple command.
+calls on redirect, peterpiper, and exec.
 Takes as input: takes in pointer to array of pointers, two ints 
 (input and output file descriptors)  
 Returns: none 
