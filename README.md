@@ -12,11 +12,8 @@
 
 ##Files and What they Do:
 ###trex.c:
-'
-/*******************************************************
-PROMPT: gets current directory and user. prints out the 
-appropriate command line prompt depending on whether the 
-hostname is null or not.
+'/*******************************************************
+PROMPT: gets current directory and user. prints out the appropriate command line prompt depending on whether the hostname is null or not.
 Takes as input: none
 Returns: none
 *******************************************************/
