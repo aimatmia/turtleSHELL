@@ -52,6 +52,20 @@ Takes as input: input string
 Returns: none 
 *******************************************************/  
 
+/******************************************************* 
+REDIRECTR: Splits input string on ">", conducts the
+appropriate redirection (including opening files), and executes 
+Takes as input: input string  
+Returns: none 
+*******************************************************/  
+
+/******************************************************* 
+REDIRECTL: Splits input string on "<", conducts the
+appropriate redirection (including opening files), and executes
+Takes as input: input string  
+Returns: none 
+*******************************************************/ 
+
 /*******************************************************  
 EXEC: TBD by Mia  
 Takes as input: takes in pointer to array of pointers, two ints (input and output file descriptors)  
