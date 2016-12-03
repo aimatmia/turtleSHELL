@@ -67,7 +67,7 @@ Returns: none
 ********************************************************************/
 
 /*******************************************************************
-REDIRECTR: Splits input string on ">>", conducts the
+REDIRECTRA: Splits input string on ">>", conducts the
 appropriate redirection (including opening files & appending), and 
 executes 
 Takes as input: input string  
