@@ -15,7 +15,7 @@ int main(){
 		char buf[256];
 		prompt();
 		readin(buf);        
-		decisonmaker(buf);
+		parse(buf);
 	}
 	return 0;
 }
