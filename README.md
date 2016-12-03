@@ -30,12 +30,14 @@ Returns: int (returns 0 upon completion)
 /*******************************************************  
 DEBLANK: removes extra white space from around a given string  
 Takes as input: input string  
-Returns: "trimmed" output string *******************************************************/  
+Returns: "trimmed" output string 
+*******************************************************/  
 
 /*******************************************************  
 READIN: reads (fgets) input from the terminal into the string buffer 
 Takes as input: input string buffer 
-Returns: none *******************************************************/  
+Returns: none 
+*******************************************************/  
 
 /******************************************************* 
 DECISIONMAKER: takes in string and after searching for certain characters such as '<', '>', or '|' determines the appropriate action to take. calls on exec.  
@@ -52,11 +54,12 @@ Returns: none
 /*******************************************************  
 EXEC: TBD by Mia  
 Takes as input: takes in pointer to array of pointers, two ints (input and output file descriptors)  
-Returns: none *******************************************************/```
-
+Returns: none 
+*******************************************************/
+```
 ### main.c:
 
-/*******************************************************  
+```/*******************************************************  
 MAIN: Runs turtleSHELL  
 Takes as input: none  
-Returns: none *******************************************************/
+Returns: none *******************************************************/```
