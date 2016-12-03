@@ -45,7 +45,7 @@ Returns: none
 *********************************************************************/
 
 /*********************************************************************
-READIN: trims white spaces
+TRIM: trims white spaces
 Takes as input: pointer to pointer to string
 Returns: string
 *********************************************************************/
@@ -90,6 +90,13 @@ Returns: none
 /*******************************************************************
 EXEC: deals with cd, exit, and calls on execvp to execute
 commands
+Takes as input: takes in pointer to array of pointers, two ints 
+(input and output file descriptors)  
+Returns: none 
+********************************************************************/
+
+/*******************************************************************
+EXEC_1COM: deals with exec cases where ";" is combined with redirection
 Takes as input: takes in pointer to array of pointers, two ints 
 (input and output file descriptors)  
 Returns: none 
