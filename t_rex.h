@@ -11,4 +11,5 @@ void exec(char ** cmd, int fdin, int fdout);
 void redirectR(char * buf);
 void redirectRA(char * buf);
 void redirectL(char * buf);
+void exec_1com(char* buf, char *fin, char *fout);
 #endif
