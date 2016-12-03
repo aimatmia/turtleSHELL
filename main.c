@@ -15,8 +15,7 @@ int main(){
 		char buf[256];
 		prompt();
 		readin(buf);        
-		parse(buf);
-           printf("whats wrong\n");
+		decisonmaker(buf);
 	}
 	return 0;
 }

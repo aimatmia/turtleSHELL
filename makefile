@@ -8,6 +8,7 @@ t_rex.o: t_rex.c t_rex.h
 
 main.o: main.c t_rex.c
 	$(GCC) -c main.c
+	
 run: 
 	./shell.out
 
