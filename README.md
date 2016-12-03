@@ -67,6 +67,14 @@ Returns: none
 ********************************************************************/
 
 /*******************************************************************
+REDIRECTR: Splits input string on ">>", conducts the
+appropriate redirection (including opening files & appending), and 
+executes 
+Takes as input: input string  
+Returns: none 
+********************************************************************/
+
+/*******************************************************************
 REDIRECTL: Splits input string on "<", conducts the
 appropriate redirection (including opening files), and executes
 Takes as input: input string  
