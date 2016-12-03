@@ -33,25 +33,30 @@ Takes as input: input string
 Returns: "trimmed" output string *******************************************************/  
 
 /*******************************************************  
-READIN: reads (fgets) input from the terminal into the string buffer Takes as input: input string buffer Returns: none *******************************************************/  
-
-/******************************************************* DECISIONMAKER: takes in string and after searching for certain characters such as '<', '>', or '|' determines the appropriate action to take. calls on exec.  
-Takes as input: input string  
+READIN: reads (fgets) input from the terminal into the string buffer 
+Takes as input: input string buffer 
 Returns: none *******************************************************/  
+
+/******************************************************* 
+DECISIONMAKER: takes in string and after searching for certain characters such as '<', '>', or '|' determines the appropriate action to take. calls on exec.  
+Takes as input: input string  
+Returns: none 
+*******************************************************/  
 
 /*******************************************************  
 PETERPIPER: separates the string by '|', adjusts redirection, and executes after forking  
 Takes as input: input string  
-Returns: none *******************************************************/  
+Returns: none 
+*******************************************************/  
 
 /*******************************************************  
 EXEC: TBD by Mia  
 Takes as input: takes in pointer to array of pointers, two ints (input and output file descriptors)  
-Returns: none *******************************************************/```  
+Returns: none *******************************************************/```
 
 ### main.c:
 
-```/*******************************************************  
+/*******************************************************  
 MAIN: Runs turtleSHELL  
 Takes as input: none  
-Returns: none *******************************************************/```
+Returns: none *******************************************************/
