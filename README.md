@@ -1,15 +1,18 @@
 # turtleSHELL
 
 ## Features:
-
 *   Forks and executes commands!
 *   Parses multiple commands on one line!
 *   Redirects using > and <!
 *   Pipe-able!
 
 ## Attempted:
+* trying to get autofill (tabbing to fill in words)
+* attempted to do all of the redirections (but did not get to all of them :( )
 
 ## Bugs:
+* To use multiple commands, there must be no spaces between each command and the semi-colon. For example, ls -l;echo hello;echo bye should work fine but ls -l; echo hello; echo bye will not work.
+* Sometimes you have to type "exit" multiple times to exit. Sometimes you don't.
 
 ## Files and What they Do:
 
@@ -67,7 +70,8 @@ Returns: none
 *******************************************************/ 
 
 /*******************************************************  
-EXEC: TBD by Mia  
+EXEC: deals with cd, exit, and calls on execvp to execute
+commands
 Takes as input: takes in pointer to array of pointers, two ints (input and output file descriptors)  
 Returns: none 
 *******************************************************/
