@@ -319,7 +319,12 @@ void exec(char** cmd, int fdin, int fdout){
       }
   }
 }
-
+/*******************************************************************
+EXEC_1COM: deals with exec cases where ";" is combined with redirection
+Takes as input: takes in pointer to array of pointers, two ints 
+(input and output file descriptors)  
+Returns: none 
+********************************************************************/
 void exec_1com(char* buf, char *fin, char *fout){
     char * cmd[20];
     int i; 
