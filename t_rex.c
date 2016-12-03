@@ -168,6 +168,13 @@ void redirectR(char * buf){
   close(op);
 }
 
+/*******************************************************************
+REDIRECTRA: Splits input string on ">>", conducts the
+appropriate redirection (including opening files & appending), and 
+executes 
+Takes as input: input string  
+Returns: none 
+********************************************************************/
 void redirectRA(char * buf){
   char * p = (char *)malloc(256);
   p = strsep(&buf, ">>");
