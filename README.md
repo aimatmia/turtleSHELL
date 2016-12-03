@@ -44,6 +44,12 @@ Takes as input: input string buffer
 Returns: none 
 *********************************************************************/
 
+/*********************************************************************
+READIN: trims white spaces
+Takes as input: pointer to pointer to string
+Returns: string
+*********************************************************************/
+
 /********************************************************************
 DECISIONMAKER: takes in string and after searching for certain 
 characters such as '<', '>', or '|' determines the appropriate action 
