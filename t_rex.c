@@ -87,30 +87,30 @@ void readin(char * buf){
 
 void decisonmaker(char * buf){
   char * cmd[20];
-  char * semi = NULL;
+  char* semi = (char *)malloc(256);
   int i = 0;
   // buf = trim(buf);
-
+  //buf = deblank(buf);
   if (!(strcmp(buf,"exit")))
     exit(0);
 
-  if (strchr(buf, ';')) {
-      char* semi = (char *)malloc(256);
-      while ( semi = strsep(&buf, ";") ) {
-         //deblank(semi);
-         for (i=0; cmd[i] = strsep(&semi, " "); i++);
-         cmd[i] = 0;
-         char * redir = (char *)malloc(256);
-         exec(cmd, -1, -1);
-       }
-  }
+  else if (strchr(buf, ';')) {
+        while (semi = strsep(&buf, ";") ) {
+           //deblank(semi);
+           //printf("semi: %s\n", semi);
+           //printf("buf: %s\n", buf);
+           for (i=0; cmd[i] = strsep(&semi, " "); i++);
+           cmd[i] = 0;
+           exec(cmd, -1, -1);
+         }
+    }
   
-  if (strchr(buf, '>')){
+  else if (strchr(buf, '>')){
      //printf("hi im here2\n");
     redirectR(buf);
   }
 
-  if (strchr(buf, '<'))
+  else if (strchr(buf, '<'))
     redirectL(buf);
 
   else if(strchr(buf, '|'))
@@ -131,6 +131,8 @@ void decisonmaker(char * buf){
 void redirectR(char * buf){
   char * p = (char *)malloc(256);
   p = strsep(&buf, ">");
+  p = deblank(p);
+  buf = deblank(buf);
   int stdout = dup(STDOUT_FILENO);
   trim(&buf);
   int op = open(buf, O_WRONLY | O_TRUNC | O_CREAT, 0644);
@@ -144,6 +146,8 @@ void redirectR(char * buf){
 void redirectL(char * buf){
   char * p = (char *)malloc(256);
   p = strsep(&buf, "<");
+  p = deblank(p);
+  buf = deblank(buf);
   int stdin = dup(STDIN_FILENO);
   trim(&buf);
   int op = open(buf, O_RDONLY, 0666);
@@ -153,18 +157,6 @@ void redirectL(char * buf){
   close(op);
 }
 
-  // else if (strchr(buf, "<")){
-  //   p = strchr(buf, "<");
-  //   int stdin = dup(STDIN_FILENO);
-  //   int pid = fork();
-  //   if (!pid){
-  //     int op = open(buf, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-  //     dup2(op, STDIN_FILENO);
-  //     decisonmaker(p);
-  //     close(op);
-  //     dup2(stdin, STDIN_FILENO);
-  //   }
-  // }
 
 void peterpiper(char * buf){
   //buf is already decisonmakerd. wake up amy.
@@ -198,89 +190,13 @@ void peterpiper(char * buf){
   }
 }
 
-
-/*    int i=0;
-    int first=1;
-    char *rest = buf;
-    char  *sin, *sout;
-    char  *fin, *fout;
-    int fdin=-1;
-    int fdout=-1;
-    
-    while (1) { 
-       sin=strchr(rest, '<');
-       sout=strchr(rest, '>');
-       printf("!!in=%s, out=%s\n", sin, sout);
-       if (sin == NULL &&  sout == NULL )
-           break; 
-    
-      //contains "<" or ">" 
-        printf("rest=%s\n", bufadd );
-        if (first && sin != NULL && sout==NULL){
-        // only input
-            bufadd = strsep(&rest , "<");
-            fin = deblank(rest);
-printf("1\n");
-        }
-        if (first && sin == NULL && sout!=NULL){
-        // only output
-            bufadd = strsep(&rest , ">");
-            fout = deblank(rest);
-printf("2\n");   
-        }
-        if (sin != NULL && sout!=NULL) {
-            char *buf1, *buf2;
-            char* r1, *r2;
-            r1 = malloc(30*sizeof(char));
-            r2 = malloc(30*sizeof(char));
-            strcpy( r1, rest);
-            strcpy( r2, rest);
-            buf1 = strsep(&r1 , "<");
-            buf2 = strsep(&r2 , ">");
-            if ( strlen(r1) > strlen(r2) ) {
-               bufadd = buf1;
-               rest = deblank(r1);
-            }
-            else {
-               bufadd = buf2;
-               rest = deblank(r2); 
-            }
-            printf("buf=%s, rest=%s\n", bufadd, rest);
-        }         
-        if (!first && sin != NULL && sout==NULL){
-        // > < 
-            fout = deblank(strsep(&rest , "<"));
-            fin = deblank(rest);
-printf("4\n");   
-        }
-        // < >
-        if ( !first && sin == NULL && sout!=NULL){
-            fin = strsep(&rest , ">");
-            fout = deblank(rest);  
-printf("5\n");             
-        }
-        first = 0;
-  } 
-  printf("in=%s, out=%s\n", fin, fout);
-  if (fin != NULL) 
-       fdin = open(fin, O_RDONLY);
-  if (fout != NULL) {
-       fdout = open(fout, O_CREAT, 0666);
-       close(fdout);
-       fdout = open(fout, O_WRONLY);
-  }       
-  deblank(bufadd);
-  exec(bufadd, fdin, fdout);
-    
-  }
-*/
-
-
 void exec(char** cmd, int fdin, int fdout){
     int saved_stdout = 1;
     int saved_stdin = 0;
     char directories[30];
     //printf("cmd %s- %s\n", cmd[0], cmd);
+    if (!(strcmp(cmd[0],"exit")))
+      exit(0);
 
     if (!(strcmp(cmd[0],"cd"))){
       char* location = strchr(cmd[1], '\n');
@@ -319,16 +235,3 @@ void exec(char** cmd, int fdin, int fdout){
       }
   }
 }
-
-
-// int main(){
-//   while(1){
-//     int fdin, fdout;
-//     fdin = fdout = -1;
-//     char buf[256];
-//     prompt();
-//     readin(buf);        
-//     decisonmaker(buf);
-//   }
-//   return 0;
-// }
