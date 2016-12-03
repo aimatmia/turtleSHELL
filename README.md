@@ -13,6 +13,7 @@
 ## Files and What they Do:
 
 ### trex.c
+Yada
 
 `/******************************************************* 
 PROMPT: gets current directory and user. prints out the appropriate command line prompt depending on whether the hostname is null or not.  
