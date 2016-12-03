@@ -57,15 +57,15 @@ char* deblank(char* input)
     return output;
 }
 
-void trim(char **str){
+char * trim(char **str){
 //printf("in trim %s\n", *str);
   char *end;
 
   // Trim leading space
-  while(isspace((unsigned char)*str)) str++;
+  while(isspace(*str)) str++;
 
   if(*str == 0)  // All spaces?
-    return;
+    return "";
 
   // Trim trailing space
   end = *str + strlen(*str) - 1;
@@ -74,6 +74,7 @@ void trim(char **str){
   // Write new null terminator
   *(end+1) = 0;
 
+  return str;
 }
 
 /*
@@ -88,7 +89,7 @@ void decisonmaker(char * buf){
   char * cmd[20];
   char * semi = NULL;
   int i = 0;
-  buf = deblank(buf);
+  // buf = trim(buf);
 
   if (!(strcmp(buf,"exit")))
     exit(0);
@@ -96,23 +97,26 @@ void decisonmaker(char * buf){
   if (strchr(buf, ';')) {
       char* semi = (char *)malloc(256);
       while ( semi = strsep(&buf, ";") ) {
-         deblank(semi);
+         //deblank(semi);
          for (i=0; cmd[i] = strsep(&semi, " "); i++);
          cmd[i] = 0;
-
          char * redir = (char *)malloc(256);
          exec(cmd, -1, -1);
        }
   }
   
-  if (strchr(buf, '>') || strchr(buf, '<'))  
-     redirect(buf);
+  if (strchr(buf, '>')){
+     //printf("hi im here2\n");
+    redirectR(buf);
+  }
 
-  if(strchr(buf, '|'))
+  if (strchr(buf, '<'))
+    redirectL(buf);
+
+  else if(strchr(buf, '|'))
      peterpiper(buf);
 
   else {
-      
       //just one command
       for (i=0; cmd[i] = strsep(&buf, " "); i++);
       //printf("cmd - %s\n", cmd[0]); 
@@ -124,9 +128,43 @@ void decisonmaker(char * buf){
   }
 }
 
-void redirect(char * buf){
-
+void redirectR(char * buf){
+  char * p = (char *)malloc(256);
+  p = strsep(&buf, ">");
+  int stdout = dup(STDOUT_FILENO);
+  trim(&buf);
+  int op = open(buf, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+  dup2(op, STDOUT_FILENO);
+  //printf("buffy: %s\n", buf);
+  decisonmaker(p);
+  dup2(stdout, STDOUT_FILENO);
+  close(op);
 }
+
+void redirectL(char * buf){
+  char * p = (char *)malloc(256);
+  p = strsep(&buf, "<");
+  int stdin = dup(STDIN_FILENO);
+  trim(&buf);
+  int op = open(buf, O_RDONLY, 0666);
+  dup2(op, STDIN_FILENO);
+  decisonmaker(p);
+  dup2(stdin, STDIN_FILENO);
+  close(op);
+}
+
+  // else if (strchr(buf, "<")){
+  //   p = strchr(buf, "<");
+  //   int stdin = dup(STDIN_FILENO);
+  //   int pid = fork();
+  //   if (!pid){
+  //     int op = open(buf, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+  //     dup2(op, STDIN_FILENO);
+  //     decisonmaker(p);
+  //     close(op);
+  //     dup2(stdin, STDIN_FILENO);
+  //   }
+  // }
 
 void peterpiper(char * buf){
   //buf is already decisonmakerd. wake up amy.
