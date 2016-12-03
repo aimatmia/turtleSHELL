@@ -21,14 +21,15 @@ Yada
 
 ```
 /**********************************************************************
-PROMPT: gets current directory and user. prints out the appropriate command line prompt depending on whether 
-the hostname is null or not.  
+PROMPT: gets current directory and user. prints out the appropriate 
+command line prompt depending on whether the hostname is null or not.  
 Takes as input: none  
 Returns: none 
 ***********************************************************************/  
 
 /**********************************************************************
-CD: takes in a path string, modifies the string if needed and changes the directory to the path string.  
+CD: takes in a path string, modifies the string if needed and changes 
+the directory to the path string.  
 Takes as input: input string (path)  
 Returns: int (returns 0 upon completion) 
 ***********************************************************************/
@@ -46,13 +47,16 @@ Returns: none
 *********************************************************************/
 
 /********************************************************************
-DECISIONMAKER: takes in string and after searching for certain characters such as '<', '>', or '|' determines the appropriate action to take. calls on exec.  
+DECISIONMAKER: takes in string and after searching for certain 
+characters such as '<', '>', or '|' determines the appropriate action 
+to take. calls on exec.  
 Takes as input: input string  
 Returns: none 
 ********************************************************************/
 
 /*******************************************************************
-PETERPIPER: separates the string by '|', adjusts redirection, and executes after forking  
+PETERPIPER: separates the string by '|', adjusts redirection, and 
+executes after forking  
 Takes as input: input string  
 Returns: none 
 ********************************************************************/
@@ -74,7 +78,8 @@ Returns: none
 /*******************************************************************
 EXEC: deals with cd, exit, and calls on execvp to execute
 commands
-Takes as input: takes in pointer to array of pointers, two ints (input and output file descriptors)  
+Takes as input: takes in pointer to array of pointers, two ints 
+(input and output file descriptors)  
 Returns: none 
 ********************************************************************/
 ```
@@ -82,6 +87,7 @@ Returns: none
 
 ```
 /*******************************************************************
+MAIN: runs the program. gets the shell party started.
 Takes as input: none  
 Returns: none 
 ********************************************************************/
