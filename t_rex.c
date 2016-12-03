@@ -80,16 +80,15 @@ void trim(char **str){
 Readin modifies a char * array and fills it with the input from fgets
 */
 void readin(char * buf){
-	fgets(buf, 256, stdin);	
-	*(strchr(buf, '\n')) = '\0';
+  fgets(buf, 256, stdin); 
+  *(strchr(buf, '\n')) = '\0';
 }
 
 void decisonmaker(char * buf){
   char * cmd[20];
   char * semi = NULL;
   int i = 0;
-  deblank(buf);
-
+  buf = deblank(buf);
 
   if (!(strcmp(buf,"exit")))
     exit(0);
@@ -97,7 +96,6 @@ void decisonmaker(char * buf){
   if (strchr(buf, ';')) {
       char* semi = (char *)malloc(256);
       while ( semi = strsep(&buf, ";") ) {
-      
          deblank(semi);
          for (i=0; cmd[i] = strsep(&semi, " "); i++);
          cmd[i] = 0;
@@ -138,10 +136,8 @@ void peterpiper(char * buf){
   int stdin = dup(STDIN_FILENO);
 
   p = strsep(&buf, "|"); //separate the statements
-  deblank(p);
-  deblank(buf);
-  printf("p: %s\n", p);
-  printf("buf: %s\n", buf);
+  p = deblank(p);
+  buf = deblank(buf);
 
   pipe(fd);
   int pid = fork(); //giving birth
@@ -177,7 +173,6 @@ void peterpiper(char * buf){
        sin=strchr(rest, '<');
        sout=strchr(rest, '>');
        printf("!!in=%s, out=%s\n", sin, sout);
-
        if (sin == NULL &&  sout == NULL )
            break; 
     
@@ -228,9 +223,7 @@ printf("5\n");
         }
         first = 0;
   } 
-
   printf("in=%s, out=%s\n", fin, fout);
-
   if (fin != NULL) 
        fdin = open(fin, O_RDONLY);
   if (fout != NULL) {
