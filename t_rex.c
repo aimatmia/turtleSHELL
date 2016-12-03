@@ -8,12 +8,14 @@
 
 #include "t_rex.h"
 
-/**********************************************************************
-PROMPT: gets current directory and user. prints out the appropriate 
-command line prompt depending on whether the hostname is null or not.  
-Takes as input: none  
-Returns: none 
-***********************************************************************/  
+/*
+T-REX:
+Trim-Readin-Execute
+*/
+
+/*
+Trim gets rid of the trailing and front spaces
+*/
 void prompt(){
   char getcd[50];
   char hostname[50];
@@ -23,54 +25,8 @@ void prompt(){
     printf("%s %s$ ", getcwd(getcd, sizeof(getcd)), getenv("USER"));
 }
 
-/**********************************************************************
-CD: takes in a path string, modifies the string if needed and changes 
-the directory to the path string.  
-Takes as input: input string (path)  
-Returns: int (returns 0 upon completion) 
-***********************************************************************/
-int cd(char *pth){
-    char path[256];
-    strcpy(path,pth);
-
-    char cwd[256];
-    if(pth[0] != '/')
-    {// true for the dir in cwd
-        getcwd(cwd,sizeof(cwd));
-        strcat(cwd,"/");
-        strcat(cwd,path);
-        chdir(cwd);
-    }else{//true for dir w.r.t. /
-        chdir(pth);
-    }
-    return 0;
-}
-
-/**********************************************************************
-DEBLANK: removes extra white space from around a given string  
-Takes as input: input string  
-Returns: "trimmed" output string 
-**********************************************************************/
-char* deblank(char* input)                                         
+char *trim(char *str)
 {
-    int i,j;
-    char *output=input;
-    for (i = 0, j = 0; i<strlen(input); i++,j++)          
-    {
-        if (input[i]!=' ')                           
-            output[j]=input[i];                     
-        else
-            j--;                                     
-    }
-    output[j]=0;
-    return output;
-}
-/*********************************************************************
-TRIM: trims white spaces
-Takes as input: pointer to pointer to string
-Returns: string
-*********************************************************************/
-char * trim(char **str){
   char *end;
 
   // Trim leading space
@@ -89,135 +45,82 @@ char * trim(char **str){
   return str;
 }
 
-/*********************************************************************
-READIN: reads (fgets) input from the terminal into the string buffer 
-Takes as input: input string buffer 
-Returns: none 
-*********************************************************************/
-void readin(char * buf){
-  fgets(buf, 256, stdin); 
-  *(strchr(buf, '\n')) = '\0';
+int cd(char *pth){
+    int BUFFERSIZE=256;
+    char path[BUFFERSIZE];
+    strcpy(path,pth);
+
+    char cwd[BUFFERSIZE];
+    if(pth[0] != '/')
+    {// true for the dir in cwd
+        getcwd(cwd,sizeof(cwd));
+        strcat(cwd,"/");
+        strcat(cwd,path);
+        chdir(cwd);
+    }else{//true for dir w.r.t. /
+        chdir(pth);
+    }
+    return 0;
 }
 
-/********************************************************************
-DECISIONMAKER: takes in string and after searching for certain 
-characters such as '<', '>', or '|' determines the appropriate action 
-to take. calls on exec.  
-Takes as input: input string  
-Returns: none 
-********************************************************************/
-void decisonmaker(char * buf){
-  char * cmd[20];
-  char* semi = (char *)malloc(256);
+//Readin modifies a char * array and fills it with the input from //fgets
+void readin(char * buf){
+	fgets(buf, 256, stdin);	
+	*(strchr(buf, '\n')) = '\0';
+}
+
+/*
+Parse trims the buf, getting rid of any unneccessary space between and after and then modifies
+the given char ** cmd, filling it with the input from buf
+*/
+void parse(char * buf){
+  char * semi = NULL;
   int i = 0;
-  if (!(strcmp(buf,"exit")))
-    exit(0);
-
-  else if (strchr(buf, ';')) {
-    printf("hello its me\n");
-        while (semi = strsep(&buf, ";") ) {
-           semi= trim(semi);
-           exec_1com(semi, NULL, NULL);
-         }
-  }
-
-  else if (strchr(buf, '<')){
-    redirectL(buf);
-  }
-
-  else if (strstr(buf, ">>")){
-    redirectRA(buf);
-  }
-  else if (strchr(buf, '>')){
-    redirectR(buf);
-  }
-
-  else if(strchr(buf, '|'))
-     peterpiper(buf);
-
-  else {
-      //just one command
-      for (i=0; cmd[i] = strsep(&buf, " "); i++);
-      //printf("cmd - %s\n", cmd[0]); 
-      cmd[i] = 0;
-      exec(cmd, -1, -1);
-  
-      if (semi !=NULL)
+  buf= trim(buf);
+  //if multiple commands
+  if (strchr(buf, ';')) {
+      char* semi = (char *)malloc(256);
+      while ( semi = strsep(&buf, ";") ) {       
+         semi= trim(semi);
+         exec_1com(semi, -1, -1);
+       }
+       if (semi !=NULL)
           free(semi);
   }
+  else {
+       //just one command
+
+       exec_1com(buf, -1, -1);
+         }
 }
 
-/*******************************************************************
-REDIRECTR: Splits input string on ">", conducts the
-appropriate redirection (including opening files), and executes 
-Takes as input: input string  
-Returns: none 
-********************************************************************/
-void redirectR(char * buf){
-  char * p = (char *)malloc(256);
-  p = strsep(&buf, ">");
-  p = deblank(p);
-  buf = deblank(buf);
-  int stdout = dup(STDOUT_FILENO);
-  trim(&buf);
-  int op = open(buf, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-  dup2(op, STDOUT_FILENO);
-  decisonmaker(p);
-  dup2(stdout, STDOUT_FILENO);
-  close(op);
-}
-
-void redirectRA(char * buf){
-  char * p = (char *)malloc(256);
-  p = strsep(&buf, ">>");
-  p = deblank(p);
-  buf = deblank(buf);
-  buf += 1;
-  int stdout = dup(STDOUT_FILENO);
-  trim(&buf);
-  int op = open(buf, O_APPEND | O_WRONLY | O_CREAT, 0644);
-  dup2(op, STDOUT_FILENO);
-  decisonmaker(p);
-  dup2(stdout, STDOUT_FILENO);
-  close(op);
-}
-
-/*******************************************************************
-REDIRECTL: Splits input string on "<", conducts the
-appropriate redirection (including opening files), and executes
-Takes as input: input string  
-Returns: none 
-********************************************************************/
-void redirectL(char * buf){
-  char * p = (char *)malloc(256);
-  p = strsep(&buf, "<");
-  p = trim(p);
-  buf = trim(buf);
-  int stdin = dup(STDIN_FILENO);
-  trim(&buf);
-  int op = open(buf, O_RDONLY, 0666);
-  dup2(op, STDIN_FILENO);
-  decisonmaker(p);
-  dup2(stdin, STDIN_FILENO);
-  close(op);
+void exec_1com(char* buf, int fdin, int fdout){
+    char * cmd[20];
+    int i; 
+    char bufsave[50];
+    strcpy(bufsave, buf);
+    for (i=0; cmd[i] = strsep(&buf, " "); i++);
+    
+    cmd[i] = '\0';
+   
+    if (strchr(bufsave, '<') || strchr(bufsave, '>') )  
+         redirect(bufsave);
+    else if (strchr(bufsave, '|') )  
+         peterpiper(bufsave);
+    else
+         exec(cmd, fdin, fdout); 
 }
 
 
-/*******************************************************************
-PETERPIPER: separates the string by '|', adjusts redirection, and 
-executes after forking  
-Takes as input: input string  
-Returns: none 
-********************************************************************/
 void peterpiper(char * buf){
-  char * p = (char *)malloc(256);
+  char * exe1 = (char *)malloc(256);
+  char* exe2;
   int stat = 0;
   int fd[2];
-  int stdin = dup(STDIN_FILENO);
+  int fdin = dup(STDIN_FILENO);
 
-  p = strsep(&buf, "|"); //separate the statements
-  p = trim(p);
-  buf = trim(buf);
+  exe1 = trim( strsep(&buf, "|") ); //separate the statements
+  exe2 = trim(buf);
 
   pipe(fd);
   int pid = fork(); //giving birth
@@ -226,32 +129,96 @@ void peterpiper(char * buf){
   if (!pid){
     close(fd[0]); //close the read part bc we want the child to write its output so that we can use it
     dup2(fd[1],STDOUT_FILENO); //swap stdout with write 
-    decisonmaker(p); //send it to decisonmaker to exec
+    exec_1com(exe1, -1, fd[1] ); //send it to exec
     exit(0); //bye bye child
   }
-
-  //parenting sucks
+//parenting sucks
   else{
     wait(&stat);
     close(fd[1]); //dont need write if its parent. u want READ
     dup2(fd[0], STDIN_FILENO); //replaces stdin with pipe read
-    decisonmaker(buf); //execute
-    dup2(stdin, STDIN_FILENO); //same thing but will return STDIN
+    exec_1com(exe2, fd[0], -1 ); //execute
+    dup2(fdin, STDIN_FILENO); //same thing but will return STDIN
   }
 }
 
-/*******************************************************************
-EXEC: deals with cd, exit, and calls on execvp to execute
-commands
-Takes as input: takes in pointer to array of pointers, two ints 
-(input and output file descriptors)  
-Returns: none 
-********************************************************************/
+void redirect(char * bufadd) {
+    int i=0;
+    int first=1;
+    char *rest = bufadd;
+    char  *sin=NULL; 
+    char  *sout=NULL;
+    char  *fin=NULL;
+    char *fout=NULL;
+    int fdin=-1;
+    int fdout=-1;
+    
+    while (1) { 
+       sin=strchr(rest, '<');
+       sout=strchr(rest, '>');
+
+       if (sin == NULL &&  sout == NULL )
+           break; 
+    
+      //contains "<" or ">" 
+        if (first && sin != NULL && sout==NULL){
+        // only input
+            bufadd = strsep(&rest , "<");
+            fin = trim(rest);
+        }
+        if (first && sin == NULL && sout!=NULL){
+        // only output
+            bufadd = strsep(&rest , ">");
+            fout = trim(rest);
+        }
+        if (sin != NULL && sout!=NULL) {
+            char *buf1, *buf2;
+            char* r1, *r2;
+            r1 = malloc(30*sizeof(char));
+            r2 = malloc(30*sizeof(char));
+            strcpy( r1, rest);
+            strcpy( r2, rest);
+            buf1 = strsep(&r1 , "<");
+            buf2 = strsep(&r2 , ">");
+            if ( strlen(r1) > strlen(r2) ) {
+               bufadd = buf1;
+               rest = trim(r1);
+            }
+            else {
+               bufadd = buf2;
+               rest = trim(r2); 
+            }
+        }         
+        if (!first && sin != NULL && sout==NULL){
+        // > < 
+            fout = trim(strsep(&rest , "<"));
+            fin = trim(rest);
+        }
+        // < >
+        if ( !first && sin == NULL && sout!=NULL){
+            fin = trim( strsep(&rest , ">"));
+            fout = trim(rest);  
+        }
+        first = 0;
+  } 
+
+  if (fin != NULL) 
+      fdin = open(fin, O_RDONLY, 0666);
+  if (fout != NULL) 
+      fdout = open(fout, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+
+  bufadd= trim(bufadd);
+  exec_1com(bufadd, fdin, fdout);
+    
+
+}
+
+
 void exec(char** cmd, int fdin, int fdout){
     int saved_stdout = 1;
     int saved_stdin = 0;
     char directories[30];
-    //printf("cmd %s- %s\n", cmd[0], cmd);
+            
     if (!(strcmp(cmd[0],"exit")))
       exit(0);
 
@@ -262,55 +229,39 @@ void exec(char** cmd, int fdin, int fdout){
     }   
     
     else {
-      if(fdin != -1){
+       if(fdin != -1){
+       //   printf("input\n");
           saved_stdin = dup(0);
           dup2(fdin, 0);
-      }
-      if(fdout!= -1) {
+       }
+       if(fdout!= -1) {
+       //   printf("output\n");
           saved_stdout = dup(1);
-          dup2(fdout, 1);
-      }
+          dup2(fdout, 1);        
+        }
      
-      int tpid;
+      int i, tpid;
       int stat=0;
       int chpid = fork();
       if (chpid == 0) 
          execvp( cmd[0], cmd );
-      else {
+  
+      else { // parent         
          do { 
            tpid = wait(&stat);
-           //printf("id %d\n", tpid);
+          
          } while(tpid != -1);
+    
       } 
-      if(fdin != -1){
+      if(fdin != -1){          
           close(fdin);
           dup2(saved_stdin, 0);
+
       }
       if(fdout!= -1) {
           close(fdout);
-          dup2(saved_stdout, 1);        
+          dup2(saved_stdout, 1);  
+          
       }
-  }
-}
-/*******************************************************************
-EXEC_1COM: deals with exec cases where ";" is combined with redirection
-Takes as input: takes in pointer to array of pointers, two ints 
-(input and output file descriptors)  
-Returns: none 
-********************************************************************/
-void exec_1com(char* buf, char *fin, char *fout){
-    char * cmd[20];
-    int i; 
-    char bufsave[50];
-    strcpy(bufsave, buf);
-    for (i=0; cmd[i] = strsep(&buf, " "); i++);
-    cmd[i] = 0;
-
-    printf("bufsave %s\n", bufsave);
-    if (strchr(bufsave, '>'))  
-         redirectR(bufsave);
-    else if (strchr(bufsave, '<'))
-      redirectL(bufsave);
-    else
-         exec(cmd, fin, fout); 
+    }
 }
